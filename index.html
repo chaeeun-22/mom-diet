@@ -1,0 +1,774 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>엄마 단백질 밥상</title>
+<meta name="theme-color" content="#2f7d5b">
+<style>
+  :root{
+    --primary:#2f7d5b; --primary-dark:#225e44; --primary-soft:#e8f3ee;
+    --bg:#ffffff; --bg2:#f5f8f6; --line:#dfe7e2;
+    --text:#1d2a24; --muted:#55655d;
+    --ok-bg:#e3f3e8; --ok:#1f6b3d;
+    --warn-bg:#fff2cc; --warn:#7a4f00;
+    --bad-bg:#fde3df; --bad:#a82319;
+    --na-bg:#eef0ef; --na:#5d6662;
+    --tabh:64px; --noteh:40px;
+  }
+  *{box-sizing:border-box}
+  html{-webkit-text-size-adjust:100%}
+  body{margin:0;background:var(--bg);color:var(--text);
+    font-family:"Pretendard","Pretendard Variable",-apple-system,BlinkMacSystemFont,"Apple SD Gothic Neo","Malgun Gothic","Noto Sans KR",sans-serif;
+    font-size:18px;line-height:1.55;word-break:keep-all;overflow-wrap:anywhere;overflow-x:hidden}
+  button{font:inherit;color:inherit}
+  .wrap{max-width:560px;margin:0 auto;padding:0 16px calc(var(--tabh) + var(--noteh) + 24px + env(safe-area-inset-bottom))}
+  header.top{position:sticky;top:0;z-index:5;background:var(--bg);border-bottom:1px solid var(--line);padding:10px 16px 8px}
+  header.top .in{max-width:560px;margin:0 auto}
+  header.top h1{margin:0;font-size:22px;color:var(--primary-dark)}
+  header.top .src{margin:2px 0 0;font-size:15px;color:var(--muted)}
+  h2{font-size:22px;margin:22px 0 10px}
+  h3{font-size:19px;margin:18px 0 8px}
+  .muted{color:var(--muted)}
+  .small{font-size:16px}
+  .card{border:1px solid var(--line);border-radius:14px;padding:14px;margin:12px 0;background:#fff}
+  .soft{background:var(--bg2)}
+  .btn{display:flex;align-items:center;justify-content:center;gap:6px;min-height:52px;padding:10px 16px;border-radius:12px;border:1px solid var(--primary);background:#fff;color:var(--primary-dark);font-weight:700;cursor:pointer;width:100%}
+  .btn.primary{background:var(--primary);color:#fff}
+  .btn.big{min-height:60px;font-size:20px}
+  .btn:active{transform:translateY(1px)}
+  .row{display:flex;gap:10px;align-items:center}
+  .row > *{flex:1}
+  .chips{display:flex;flex-wrap:wrap;gap:8px;margin:8px 0}
+  .chip{min-height:48px;padding:8px 14px;border-radius:24px;border:1px solid var(--line);background:#fff;cursor:pointer;font-size:17px}
+  .chip[aria-pressed="true"]{background:var(--primary);border-color:var(--primary);color:#fff;font-weight:700}
+  select{font:inherit;min-height:48px;width:100%;border:1px solid var(--line);border-radius:12px;padding:8px 12px;background:#fff}
+  label.fld{display:block;margin:10px 0}
+  label.fld span{display:block;font-size:16px;color:var(--muted)}
+  label.fld input{font:inherit;width:100%;min-height:48px;border:1px solid var(--line);border-radius:12px;padding:8px 12px}
+
+  /* 진행 막대 */
+  .bar{height:16px;border-radius:8px;background:#e7ece9;overflow:hidden}
+  .bar > i{display:block;height:100%;background:var(--primary);border-radius:8px}
+  .bar.warn > i{background:#e0a400}
+  .bar.bad > i{background:#d13b2c}
+  .meter{margin:14px 0}
+  .meter .hd{display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap}
+  .big-num{font-size:34px;font-weight:800;color:var(--primary-dark);line-height:1.2}
+  .state{font-size:16px;font-weight:700;padding:1px 8px;border-radius:8px;white-space:nowrap}
+  .s-ok{background:var(--ok-bg);color:var(--ok)}
+  .s-warn{background:var(--warn-bg);color:var(--warn)}
+  .s-bad{background:var(--bad-bg);color:var(--bad)}
+  .s-na{background:var(--na-bg);color:var(--na)}
+
+  /* 식품 카드 */
+  .food .name{font-size:20px;font-weight:800;margin:0;text-align:left;background:none;border:0;padding:0;cursor:pointer;display:block;width:100%}
+  .food .name small{font-weight:500;color:var(--muted);font-size:16px}
+  .prot3{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin:10px 0}
+  .prot3 div{background:var(--primary-soft);border-radius:10px;padding:8px 4px;text-align:center}
+  .prot3 b{display:block;font-size:22px;color:var(--primary-dark);line-height:1.2}
+  .prot3 span{font-size:15px;color:var(--muted)}
+  .prot3 .hl{background:var(--primary);}
+  .prot3 .hl b,.prot3 .hl span{color:#fff}
+  .badges{display:flex;flex-wrap:wrap;gap:6px;margin:8px 0}
+  .badge{font-size:16px;padding:4px 10px;border-radius:10px;white-space:nowrap}
+  .tip{margin:6px 0;font-size:17px}
+  .stepper{display:flex;align-items:center;gap:8px;margin-top:10px}
+  .stepper .sb{width:52px;min-height:52px;border-radius:12px;border:1px solid var(--line);background:#fff;font-size:26px;font-weight:700;cursor:pointer;flex:0 0 auto}
+  .stepper .amt{flex:1;text-align:center;font-weight:700}
+  .stepper .amt small{display:block;font-weight:500;color:var(--muted);font-size:15px}
+  .tag{display:inline-block;font-size:15px;padding:1px 8px;border-radius:8px;background:var(--bad-bg);color:var(--bad);font-weight:700;margin-left:4px;vertical-align:middle}
+  .sep{margin:26px 0 6px;padding:10px 12px;border-radius:10px;background:var(--bad-bg);color:var(--bad);font-weight:700}
+
+  /* 기록 목록 */
+  .log{list-style:none;padding:0;margin:0}
+  .log li{display:flex;gap:10px;align-items:center;padding:10px 0;border-bottom:1px solid var(--line)}
+  .log li .t{flex:1}
+  .log li .x{flex:0 0 auto;width:48px;height:48px;border-radius:12px;border:1px solid var(--line);background:#fff;font-size:20px;cursor:pointer}
+
+  table{border-collapse:collapse;width:100%;font-size:17px}
+  th,td{text-align:left;padding:7px 6px;border-bottom:1px solid var(--line);vertical-align:top}
+  td.n{text-align:right;white-space:nowrap}
+
+  /* 추천 */
+  .rec h3{margin:0 0 6px}
+  .rec ul{margin:6px 0 10px;padding-left:20px}
+  .tot{display:grid;grid-template-columns:repeat(2,1fr);gap:6px;margin:8px 0}
+  .tot div{background:var(--bg2);border-radius:10px;padding:6px 10px}
+  .tot b{font-size:19px}
+  .flag{font-size:16px;color:var(--warn);background:var(--warn-bg);border-radius:8px;padding:4px 8px;display:inline-block;margin:4px 0}
+
+  /* 하단 탭 + 주의 띠 */
+  .note-strip{position:fixed;left:0;right:0;bottom:calc(var(--tabh) + env(safe-area-inset-bottom));height:var(--noteh);background:#fffbea;border-top:1px solid #efe3b8;display:flex;align-items:center;justify-content:center;padding:0 12px;z-index:9}
+  .note-strip button{background:none;border:0;font-size:15px;color:#6b5600;cursor:pointer;min-height:40px;text-decoration:underline}
+  nav.tabs{position:fixed;left:0;right:0;bottom:0;height:calc(var(--tabh) + env(safe-area-inset-bottom));padding-bottom:env(safe-area-inset-bottom);background:#fff;border-top:1px solid var(--line);display:flex;z-index:10}
+  nav.tabs button{flex:1;min-width:0;white-space:nowrap;border:0;background:none;font-size:16px;cursor:pointer;color:var(--muted);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;min-height:var(--tabh)}
+  nav.tabs button svg{width:24px;height:24px}
+  nav.tabs button[aria-selected="true"]{color:var(--primary-dark);font-weight:800}
+  nav.tabs button[aria-selected="true"] svg{stroke:var(--primary)}
+  section.tab[hidden]{display:none}
+
+  /* 상세 시트 */
+  .sheet{position:fixed;inset:0;background:rgba(0,0,0,.4);z-index:20;display:flex;align-items:flex-end;justify-content:center}
+  .sheet[hidden]{display:none}
+  .sheet .panel{background:#fff;width:100%;max-width:560px;max-height:88vh;overflow-y:auto;border-radius:18px 18px 0 0;padding:18px 16px calc(18px + env(safe-area-inset-bottom))}
+  .disclaimer{font-size:16px;background:#fffbea;border:1px solid #efe3b8;border-radius:12px;padding:12px;margin:22px 0 8px;color:#4d3f00}
+  details{border:1px solid var(--line);border-radius:12px;padding:10px 12px;margin:12px 0}
+  details summary{cursor:pointer;font-weight:700;min-height:32px}
+  .toast{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(var(--tabh) + var(--noteh) + 16px);background:#1d2a24;color:#fff;padding:12px 18px;border-radius:12px;z-index:30;font-size:17px;max-width:90vw;text-align:center}
+  .toast[hidden]{display:none}
+</style>
+</head>
+<body>
+<header class="top"><div class="in">
+  <h1>엄마 단백질 밥상</h1>
+  <p class="src" id="srcLine">자료: 식품의약품안전처 식품영양성분 데이터베이스</p>
+</div></header>
+
+<main class="wrap">
+  <!-- 탭 1. 오늘 -->
+  <section class="tab" id="tab-today" aria-label="오늘">
+    <h2 id="todayTitle">오늘</h2>
+    <div class="card">
+      <div class="meter">
+        <div class="hd"><span>오늘 먹은 단백질</span><span id="protState"></span></div>
+        <div class="big-num" id="protNum">0g</div>
+        <div class="bar" role="progressbar" aria-label="단백질 목표 진행"><i id="protBar" style="width:0%"></i></div>
+        <p class="small muted" id="protHint"></p>
+      </div>
+    </div>
+    <div class="card">
+      <h3 style="margin-top:0">조심할 것 — 오늘 남은 양</h3>
+      <div id="limitMeters"></div>
+      <p class="small muted">80% 넘으면 노랑, 100% 넘으면 빨강으로 바뀌어요.</p>
+    </div>
+    <button class="btn primary big" id="goRec">다음 끼니 추천 받기</button>
+
+    <h2>오늘 먹은 것</h2>
+    <div class="card"><ul class="log" id="todayLog"></ul>
+      <p class="muted" id="emptyLog">아직 기록이 없어요. '식품 고르기'나 '추천'에서 담아 보세요.</p>
+    </div>
+
+    <h2>지난 7일 단백질</h2>
+    <div class="card"><div id="history"></div>
+      <p class="small muted">3일 정도 꾸준히 기록하면 정말 단백질이 부족한지 알 수 있어요.</p>
+    </div>
+    <div class="disclaimer" data-disc></div>
+  </section>
+
+  <!-- 탭 2. 식품 고르기 -->
+  <section class="tab" id="tab-foods" aria-label="식품 고르기" hidden>
+    <h2>단백질 식품 고르기</h2>
+    <div class="chips" id="catChips" role="group" aria-label="분류"></div>
+    <label class="fld"><span>정렬</span>
+      <select id="sortSel">
+        <option value="serv">단백질 많은 순 (1회 분량)</option>
+        <option value="eff">100kcal당 단백질 많은 순</option>
+        <option value="chol">콜레스테롤 낮은 순</option>
+      </select>
+    </label>
+    <p class="small muted">신호등은 1회 분량이 하루 한도의 몇 %인지 보여줘요. ✓ 괜찮음(15% 미만) · ! 적당히(15~30%) · ✕ 자주 먹지 않기(30% 이상)</p>
+    <div id="foodList"></div>
+    <div class="disclaimer" data-disc></div>
+  </section>
+
+  <!-- 탭 3. 다음 끼니 추천 -->
+  <section class="tab" id="tab-rec" aria-label="다음 끼니 추천" hidden>
+    <h2>다음 끼니 추천</h2>
+    <h3>어떤 끼니인가요?</h3>
+    <div class="chips" id="mealChips" role="group" aria-label="끼니"></div>
+    <h3>오늘 운동은?</h3>
+    <div class="chips" id="exChips" role="group" aria-label="운동"></div>
+    <button class="btn primary big" id="runRec" style="margin-top:12px">추천 받기</button>
+    <div id="recBasis"></div>
+    <div id="recList"></div>
+    <div class="disclaimer" data-disc></div>
+  </section>
+
+  <!-- 탭 4. 알아두기 -->
+  <section class="tab" id="tab-info" aria-label="알아두기" hidden>
+    <h2>알아두기</h2>
+    <div class="card soft" id="bodySummary"></div>
+    <div class="card">
+      <h3 style="margin-top:0">핵심은 "덜 먹기"보다 "단백질 늘리고 군것질 줄이기"</h3>
+      <p><span id="coreMsg"></span> 굶거나 적게 먹기보다, <b>단백질을 충분히 먹어 근육을 지키고 군것질을 줄여</b> 체지방을 천천히 줄이는 게 좋아요.</p>
+    </div>
+    <div class="card">
+      <h3 style="margin-top:0">단백질은 세 끼에 나눠서</h3>
+      <p>한 번에 몰아 먹는 것보다 아침·점심·저녁에 20~30g씩 나눠 먹는 게 근육에 좋아요. 특히 <b>아침에 부족하기 쉬워요</b> — 달걀 1개, 그릭요거트, 무가당 두유부터 시작해 보세요.</p>
+    </div>
+    <div class="card">
+      <h3 style="margin-top:0">폐경 전후엔 콜레스테롤 관리</h3>
+      <p>이 시기엔 나쁜 콜레스테롤(LDL)이 오르기 쉬워요. <b>포화지방</b>(혈관에 쌓이기 쉬운 기름 — 삼겹살, 버터, 가공육)과 <b>콜레스테롤</b>(노른자, 새우·오징어 등)을 너무 많이 먹지 않게 해 주세요.</p>
+    </div>
+    <div class="card">
+      <h3 style="margin-top:0">뼈 건강: 칼슘·비타민 D</h3>
+      <p>우유, 요거트, 두부, 멸치에 칼슘이 많아요. 햇볕 쬐며 걷기도 비타민 D에 도움이 돼요.</p>
+    </div>
+    <div class="card">
+      <h3 style="margin-top:0">단백질 보충제는 꼭 필요하지 않아요</h3>
+      <p>매 끼니 고기·생선·달걀·두부 중 하나를 챙기면 음식만으로 충분히 채울 수 있어요.</p>
+    </div>
+    <div class="card">
+      <h3 style="margin-top:0">정말 부족한지 확인하려면</h3>
+      <p>3일 정도 먹은 것을 '오늘' 탭에 기록해 보세요. 지난 7일 단백질이 매일 목표보다 한참 적다면 부족한 게 맞아요.</p>
+    </div>
+
+    <h2>내 정보</h2>
+    <div class="card">
+      <label class="fld"><span>나이 (세)</span><input type="number" inputmode="numeric" id="pAge" min="20" max="100"></label>
+      <label class="fld"><span>키 (cm)</span><input type="number" inputmode="decimal" id="pH" min="120" max="210" step="0.1"></label>
+      <label class="fld"><span>몸무게 (kg)</span><input type="number" inputmode="decimal" id="pW" min="30" max="200" step="0.1"></label>
+      <label class="fld"><span>체지방률 (%)</span><input type="number" inputmode="decimal" id="pBF" min="5" max="60" step="0.1"></label>
+      <button class="btn primary" id="saveProfile">저장하고 목표 다시 계산</button>
+      <p class="small muted">입력한 정보는 이 핸드폰 안에만 저장돼요.</p>
+    </div>
+
+    <details id="basis">
+      <summary>하루 목표와 근거 보기</summary>
+      <div id="basisBody"></div>
+    </details>
+    <details>
+      <summary>데이터 출처</summary>
+      <div id="dataBody"></div>
+    </details>
+    <div class="disclaimer" data-disc></div>
+  </section>
+</main>
+
+<div class="note-strip"><button id="noteBtn">의학적 진단이 아닌 참고용이에요 · 꼭 읽어 주세요</button></div>
+
+<nav class="tabs" role="tablist" aria-label="메뉴">
+  <button role="tab" data-tab="today" aria-selected="true">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11l9-7 9 7v9a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1z"/></svg>오늘</button>
+  <button role="tab" data-tab="foods" aria-selected="false">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg>식품 고르기</button>
+  <button role="tab" data-tab="rec" aria-selected="false">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 11h16a8 8 0 0 1-16 0z"/><path d="M8 7c0-1.5 1-2 1-3M12 7c0-1.5 1-2 1-3M16 7c0-1.5 1-2 1-3"/></svg>끼니 추천</button>
+  <button role="tab" data-tab="info" aria-selected="false">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 11v6M12 7.5v.5"/></svg>알아두기</button>
+</nav>
+
+<div class="sheet" id="sheet" hidden><div class="panel" role="dialog" aria-modal="true" id="sheetPanel"></div></div>
+<div class="toast" id="toast" hidden></div>
+
+<script src="foods.js"></script>
+<script>
+(function(){
+"use strict";
+
+/* ───────── 0. 데이터 준비 ───────── */
+var FOODS = window.FOODS || [];
+var META = window.FOODS_META || {dates:[]};
+var BY_ID = {};
+FOODS.forEach(function(f){ BY_ID[f.id] = f; });
+var PROTEIN_CATS = ["meat","fish","eggdairy","soy","nut","caution"];
+var CAT_LABEL = {all:"전체", meat:"고기", fish:"생선·해산물", eggdairy:"달걀·유제품", soy:"콩·두부", nut:"견과"};
+var KEY_ID = {}; // 화면 이름 → 식품코드 (추천 템플릿에서 사용)
+FOODS.forEach(function(f){ KEY_ID[f.name] = f.id; });
+
+if(!FOODS.length){
+  document.querySelector("main").innerHTML = '<div class="card">foods.js 를 불러오지 못했어요. index.html 과 같은 폴더에 foods.js 가 있는지 확인해 주세요.</div>';
+  return;
+}
+var dates = (META.dates||[]).slice().sort();
+document.getElementById("srcLine").textContent =
+  "자료: 식품의약품안전처 식품영양성분 데이터베이스 (기준일자 " +
+  (dates.length>1 ? dates[0] + " ~ " + dates[dates.length-1] : (dates[0]||"-")) + ")";
+
+/* ───────── 1. 저장 (localStorage, 실패해도 동작) ───────── */
+var STORE_KEY = "momProteinDiet.v1";
+// 신체 정보는 코드에 넣지 않는다. 처음 열 때 입력받아 이 기기(localStorage)에만 저장.
+var mem = null;
+var LIMITS = {age:[20,100], height:[120,210], weight:[30,200], bodyfat:[5,60]};
+function validProfile(p){
+  if(!p || typeof p !== "object") return false;
+  return Object.keys(LIMITS).every(function(k){ var v=+p[k]; return !isNaN(v) && v>=LIMITS[k][0] && v<=LIMITS[k][1]; });
+}
+function hasProfile(){ return validProfile(load().profile); }
+function load(){
+  if(mem) return mem;
+  var d = null;
+  try{ d = JSON.parse(localStorage.getItem(STORE_KEY) || "null"); }catch(e){ d = null; }
+  if(!d || typeof d !== "object") d = {};
+  if(!validProfile(d.profile)) d.profile = null;
+  if(!d.logs || typeof d.logs !== "object") d.logs = {};
+  mem = d; pruneOld(); return mem;
+}
+function save(){
+  try{ localStorage.setItem(STORE_KEY, JSON.stringify(mem)); }catch(e){ /* 저장 실패: 이 화면에서만 유지 */ }
+}
+function dayKey(dt){
+  dt = dt || new Date();
+  var m = dt.getMonth()+1, d = dt.getDate();
+  return dt.getFullYear() + "-" + (m<10?"0":"") + m + "-" + (d<10?"0":"") + d;
+}
+function pruneOld(){ // 오늘 포함 최근 7일만 보관
+  var keep = {}; for(var i=0;i<7;i++){ var dt=new Date(); dt.setDate(dt.getDate()-i); keep[dayKey(dt)] = true; }
+  Object.keys(mem.logs).forEach(function(k){ if(!keep[k]) delete mem.logs[k]; });
+}
+function todayLog(){ var d = load(); var k = dayKey(); if(!d.logs[k]) d.logs[k] = []; return d.logs[k]; }
+
+/* ───────── 2. 목표 계산 ───────── */
+function targets(p){
+  var w = +p.weight, h = +p.height, a = +p.age, bf = +p.bodyfat;
+  var bmr = 10*w + 6.25*h - 5*a - 161;              // Mifflin-St Jeor (여성)
+  var tdeeLo = bmr*1.375, tdeeHi = bmr*1.55;
+  var energy = Math.round((bmr*1.5 - 300)/50)*50;   // 주 5회 운동 ≈ 활동계수 1.5, 하루 300kcal 안팎 줄이기
+  var t = {
+    bmr:bmr, tdeeLo:tdeeLo, tdeeHi:tdeeHi, energy:energy,
+    protein: Math.max(50, Math.round(w*1.1)), proteinLo: Math.max(50, Math.round(w*1.0)), proteinHi: Math.round(w*1.2),
+    fatLo: Math.round(energy*0.15/9), fatHi: Math.round(energy*0.30/9),
+    satfat: Math.round(energy*0.07/9*10)/10, trans: Math.round(energy*0.01/9*10)/10,
+    chol: 300, sodium: 2300, sodiumIdeal: 2000, fiber: 25, calcium: 750, vitd: 10,
+    bmi: w/((h/100)*(h/100)), fatMass: w*bf/100, lean: w - w*bf/100
+  };
+  return t;
+}
+
+/* ───────── 3. 계산 도우미 ───────── */
+function amt(f, key, grams){ var v = f[key]; return (v===null || v===undefined) ? null : v*grams/100; }
+function fmt(v, d){ if(v===null || v===undefined || isNaN(v)) return "자료 없음"; d = (d===undefined)?1:d; var x = Math.round(v*Math.pow(10,d))/Math.pow(10,d); return x.toLocaleString("ko-KR"); }
+function entryItems(e){ return e.t === "meal" ? e.items : [{id:e.id, g:e.g}]; }
+// 빈 칸이어도 실제로는 0인 경우(소금·식물성 식품의 콜레스테롤 등)는 "자료 없음" 안내에서 뺀다. 합계에는 영향 없음.
+function trivialMissing(f, k){
+  if(f.cat==="season" && (k==="chol" || k==="satfat" || k==="fat")) return true;
+  if(k==="chol" && ["veg","grain","fruit","soy","nut"].indexOf(f.cat)>=0) return true;
+  return false;
+}
+function sumItems(items){
+  var s = {protein:0,kcal:0,chol:0,satfat:0,sodium:0,fat:0,missing:{},missingFoods:{}};
+  items.forEach(function(it){
+    var f = BY_ID[it.id]; if(!f) return;
+    ["protein","kcal","chol","satfat","sodium","fat"].forEach(function(k){
+      var v = amt(f,k,it.g);
+      if(v===null){ if(!trivialMissing(f,k)){ s.missing[k]=true; (s.missingFoods[k]=s.missingFoods[k]||{})[f.name]=true; } }
+      else s[k]+=v;
+    });
+  });
+  return s;
+}
+function todayTotals(){ var all=[]; todayLog().forEach(function(e){ all = all.concat(entryItems(e)); }); return sumItems(all); }
+function level(pct){ if(pct===null) return "na"; return pct>=30?"bad":(pct>=15?"warn":"ok"); }
+var ICON = {ok:"✓", warn:"!", bad:"✕", na:"–"};
+var LVTXT = {ok:"괜찮음", warn:"적당히", bad:"자주 먹지 않기", na:"자료 없음"};
+function esc(s){ return String(s).replace(/[&<>"']/g, function(c){ return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]; }); }
+
+var toastTimer=null;
+function toast(msg){ var t=document.getElementById("toast"); t.textContent=msg; t.hidden=false; clearTimeout(toastTimer); toastTimer=setTimeout(function(){t.hidden=true;},2200); }
+
+/* ───────── 4. 탭 전환 ───────── */
+var tabs = document.querySelectorAll("nav.tabs button");
+function showTab(name){
+  tabs.forEach(function(b){ b.setAttribute("aria-selected", b.dataset.tab===name ? "true":"false"); });
+  document.querySelectorAll("section.tab").forEach(function(s){ s.hidden = (s.id !== "tab-"+name); });
+  window.scrollTo(0,0);
+  if(!hasProfile()){ openSetup(); return; }
+  if(name==="today") renderToday();
+}
+tabs.forEach(function(b){ b.addEventListener("click", function(){ showTab(b.dataset.tab); }); });
+
+/* ───────── 5. 탭 1: 오늘 ───────── */
+function meterHTML(label, plain, used, limit, unit){
+  var pct = limit ? used/limit*100 : 0;
+  var cls = pct>=100 ? "bad" : (pct>=80 ? "warn" : "");
+  var st = pct>=100 ? '<span class="state s-bad">✕ 넘었어요</span>' : (pct>=80 ? '<span class="state s-warn">! 거의 다 찼어요</span>' : '<span class="state s-ok">✓ 여유 있어요</span>');
+  var left = Math.max(0, limit-used);
+  return '<div class="meter"><div class="hd"><span><b>'+label+'</b> <span class="small muted">('+plain+')</span></span>'+st+'</div>'+
+    '<div class="bar '+cls+'"><i style="width:'+Math.min(100,pct).toFixed(0)+'%"></i></div>'+
+    '<div class="small muted">'+fmt(used,unit==="g"?1:0)+unit+' / 하루 '+fmt(limit,unit==="g"?1:0)+unit+' · 남은 양 '+fmt(left,unit==="g"?1:0)+unit+'</div></div>';
+}
+function renderToday(){
+  var d = load(), t = targets(d.profile), s = todayTotals();
+  var now = new Date();
+  document.getElementById("todayTitle").textContent = "오늘 (" + (now.getMonth()+1) + "월 " + now.getDate() + "일)";
+  var pct = s.protein/t.protein*100;
+  document.getElementById("protNum").textContent = fmt(s.protein,0)+"g / "+t.protein+"g";
+  document.getElementById("protBar").style.width = Math.min(100,pct).toFixed(0)+"%";
+  var stEl = document.getElementById("protState");
+  stEl.innerHTML = pct>=100 ? '<span class="state s-ok">✓ 목표 달성</span>' : '<span class="state s-na">'+fmt(Math.max(0,t.protein-s.protein),0)+'g 남음</span>';
+  document.getElementById("protHint").textContent = "하루 목표 "+t.proteinLo+"~"+t.proteinHi+"g (몸무게 × 1.0~1.2) · 오늘 열량 "+fmt(s.kcal,0)+" / "+t.energy+"kcal";
+  document.getElementById("limitMeters").innerHTML =
+    meterHTML("콜레스테롤","많으면 혈관 건강에 부담", s.chol, t.chol, "mg") +
+    meterHTML("포화지방","혈관에 쌓이기 쉬운 기름", s.satfat, t.satfat, "g") +
+    meterHTML("나트륨","소금 성분 — 많으면 혈압이 올라요", s.sodium, t.sodium, "mg") +
+    (Object.keys(s.missing).length ? '<p class="small muted">일부 식품은 DB에 콜레스테롤 등 자료가 없어 합계에서 빠졌어요.</p>' : "");
+
+  var ul = document.getElementById("todayLog"); ul.innerHTML = "";
+  var log = todayLog();
+  document.getElementById("emptyLog").hidden = log.length>0;
+  log.forEach(function(e, i){
+    var sm = sumItems(entryItems(e));
+    var title = e.t==="meal" ? e.name : (BY_ID[e.id] ? BY_ID[e.id].name : e.id) + " " + fmt(e.g,0) + (BY_ID[e.id]?BY_ID[e.id].unit:"g");
+    var li = document.createElement("li");
+    li.innerHTML = '<div class="t"><b>'+esc(title)+'</b><br><span class="small muted">'+(e.meal?esc(e.meal)+' · ':'')+'단백질 '+fmt(sm.protein,1)+'g · '+fmt(sm.kcal,0)+'kcal</span></div>'+
+      '<button class="x" aria-label="'+esc(title)+' 지우기">✕</button>';
+    li.querySelector(".x").addEventListener("click", function(){ log.splice(i,1); save(); renderToday(); toast("지웠어요"); });
+    ul.appendChild(li);
+  });
+
+  // 지난 7일
+  var rows = "";
+  for(var k=6;k>=0;k--){
+    var dt = new Date(); dt.setDate(dt.getDate()-k);
+    var key = dayKey(dt), L = d.logs[key] || [], all = [];
+    L.forEach(function(e){ all = all.concat(entryItems(e)); });
+    var p = sumItems(all).protein, w = Math.min(100, p/t.protein*100);
+    rows += '<tr><td style="white-space:nowrap">'+(dt.getMonth()+1)+'/'+dt.getDate()+(k===0?' (오늘)':'')+'</td>'+
+      '<td style="width:55%"><div class="bar" aria-hidden="true"><i style="width:'+w.toFixed(0)+'%"></i></div></td>'+
+      '<td class="n">'+(L.length? fmt(p,0)+'g' : '<span class="muted">기록 없음</span>')+'</td></tr>';
+  }
+  document.getElementById("history").innerHTML = '<table>'+rows+'</table>';
+}
+document.getElementById("goRec").addEventListener("click", function(){ showTab("rec"); runRecommend(); });
+
+/* ───────── 6. 탭 2: 식품 고르기 ───────── */
+var curCat = "all", mult = {};
+function catChips(){
+  var box = document.getElementById("catChips"); box.innerHTML = "";
+  Object.keys(CAT_LABEL).forEach(function(c){
+    var b = document.createElement("button"); b.className="chip"; b.textContent=CAT_LABEL[c];
+    b.setAttribute("aria-pressed", c===curCat?"true":"false");
+    b.addEventListener("click", function(){ curCat=c; catChips(); renderFoods(); });
+    box.appendChild(b);
+  });
+}
+function badgeHTML(label, val, unit, limit, d){
+  var pct = (val===null) ? null : val/limit*100;
+  var lv = level(pct);
+  return '<span class="badge s-'+lv+'" title="'+LVTXT[lv]+'">'+ICON[lv]+' '+label+' '+(val===null?"자료 없음":fmt(val,d)+unit)+'</span>';
+}
+function foodCard(f){
+  var t = targets(load().profile);
+  var m = mult[f.id] || 1, g = f.serving*m, u = f.unit;
+  var per1 = f.protein===null?null:f.protein/100;
+  var perServ = amt(f,"protein",g);
+  var eff = (f.protein!==null && f.kcal) ? f.protein/f.kcal*100 : null;
+  var div = document.createElement("div"); div.className = "card food";
+  div.innerHTML =
+    '<button class="name" aria-label="'+esc(f.name)+' 상세 영양표 보기">'+esc(f.name)+(f.cat==="caution"?'<span class="tag">주의</span>':'')+
+      '<br><small>1회 분량: '+esc(f.servingDesc)+' ('+fmt(f.serving,0)+u+') · 눌러서 상세 보기</small></button>'+
+    '<div class="prot3">'+
+      '<div><b>'+fmt(per1,2)+'g</b><span>1'+u+'당 단백질</span></div>'+
+      '<div><b>'+fmt(f.protein,1)+'g</b><span>100'+u+'당</span></div>'+
+      '<div class="hl"><b>'+fmt(perServ,1)+'g</b><span>'+(m===1?'1회 분량당':'담을 양 '+fmt(g,0)+u)+'</span></div>'+
+    '</div>'+
+    '<div class="small muted">100kcal당 단백질 '+fmt(eff,1)+'g · 1회 분량 기준 표시</div>'+
+    '<div class="badges">'+
+      badgeHTML("열량", amt(f,"kcal",g), "kcal", t.energy, 0)+
+      badgeHTML("지방", amt(f,"fat",g), "g", t.fatHi, 1)+
+      badgeHTML("포화지방", amt(f,"satfat",g), "g", t.satfat, 1)+
+      badgeHTML("콜레스테롤", amt(f,"chol",g), "mg", t.chol, 0)+
+      badgeHTML("나트륨", amt(f,"sodium",g), "mg", t.sodium, 0)+
+    '</div>'+
+    (f.tip?'<p class="tip">'+esc(f.tip)+'</p>':'')+
+    '<div class="stepper">'+
+      '<button class="sb" data-d="-0.5" aria-label="양 줄이기">−</button>'+
+      '<div class="amt">'+fmt(m,1)+'회 분량<small>'+fmt(g,0)+u+'</small></div>'+
+      '<button class="sb" data-d="0.5" aria-label="양 늘리기">+</button>'+
+    '</div>'+
+    '<button class="btn primary add" style="margin-top:10px">오늘 먹은 것에 담기</button>';
+  div.querySelector(".name").addEventListener("click", function(){ openDetail(f); });
+  div.querySelectorAll(".sb").forEach(function(b){
+    b.addEventListener("click", function(){
+      var nm = Math.round(((mult[f.id]||1) + parseFloat(b.dataset.d))*10)/10;
+      mult[f.id] = Math.min(5, Math.max(0.5, nm));
+      div.replaceWith(foodCard(f));
+    });
+  });
+  div.querySelector(".add").addEventListener("click", function(){
+    todayLog().push({t:"food", id:f.id, g:g, ts:Date.now()}); save();
+    toast(f.name+" "+fmt(g,0)+u+" 담았어요 (단백질 "+fmt(perServ,1)+"g)");
+  });
+  return div;
+}
+function renderFoods(){
+  var sort = document.getElementById("sortSel").value;
+  var list = FOODS.filter(function(f){ return PROTEIN_CATS.indexOf(f.cat)>=0 && (curCat==="all" ? true : f.cat===curCat); });
+  function key(f){
+    if(sort==="serv") return -(amt(f,"protein",f.serving)||0);
+    if(sort==="eff") return -((f.protein!==null && f.kcal)? f.protein/f.kcal : 0);
+    return (f.chol===null) ? 1e9 : amt(f,"chol",f.serving); // 자료 없음은 맨 뒤
+  }
+  var normal = list.filter(function(f){return f.cat!=="caution";}).sort(function(a,b){ return key(a)-key(b) || a.id.localeCompare(b.id); });
+  var caution = list.filter(function(f){return f.cat==="caution";}).sort(function(a,b){ return key(a)-key(b) || a.id.localeCompare(b.id); });
+  var box = document.getElementById("foodList"); box.innerHTML = "";
+  normal.forEach(function(f){ box.appendChild(foodCard(f)); });
+  if(caution.length){
+    var h = document.createElement("div"); h.className="sep"; h.textContent="✕ 비교용 — 자주 먹지 않기 (가공육·튀긴 식품)"; box.appendChild(h);
+    caution.forEach(function(f){ box.appendChild(foodCard(f)); });
+  }
+}
+document.getElementById("sortSel").addEventListener("change", renderFoods);
+
+/* 상세 시트 */
+var sheet = document.getElementById("sheet"), panel = document.getElementById("sheetPanel");
+var sheetLocked = false; // 첫 정보 입력 창은 저장 전에는 닫히지 않음
+function openSheet(html){ sheetLocked=false; panel.innerHTML = html + '<button class="btn primary" id="closeSheet" style="margin-top:14px">닫기</button>'; sheet.hidden=false; document.getElementById("closeSheet").addEventListener("click", closeSheet); }
+function closeSheet(){ if(sheetLocked) return; sheet.hidden=true; }
+function openSetup(){
+  if(!sheet.hidden && sheetLocked) return;
+  panel.innerHTML =
+    '<h2 style="margin-top:0">처음 한 번만 입력해 주세요</h2>'+
+    '<p class="small muted">하루 단백질·열량 목표를 계산하는 데 써요. 이 핸드폰 안에만 저장돼요.</p>'+
+    '<label class="fld"><span>나이 (세)</span><input type="number" inputmode="numeric" id="sAge" min="20" max="100"></label>'+
+    '<label class="fld"><span>키 (cm)</span><input type="number" inputmode="decimal" id="sH" min="120" max="210" step="0.1"></label>'+
+    '<label class="fld"><span>몸무게 (kg)</span><input type="number" inputmode="decimal" id="sW" min="30" max="200" step="0.1"></label>'+
+    '<label class="fld"><span>체지방률 (%) — 모르면 인바디 결과지를 보세요</span><input type="number" inputmode="decimal" id="sBF" min="5" max="60" step="0.1"></label>'+
+    '<p class="small" id="sErr" style="color:var(--bad)" hidden>네 칸을 모두 알맞은 숫자로 입력해 주세요.</p>'+
+    '<button class="btn primary big" id="sSave">시작하기</button>';
+  sheetLocked = true; sheet.hidden = false;
+  document.getElementById("sSave").addEventListener("click", function(){
+    var p = {sex:"F", age:parseFloat(document.getElementById("sAge").value), height:parseFloat(document.getElementById("sH").value),
+             weight:parseFloat(document.getElementById("sW").value), bodyfat:parseFloat(document.getElementById("sBF").value)};
+    if(!validProfile(p)){ document.getElementById("sErr").hidden=false; return; }
+    load().profile = p; save(); sheetLocked=false; sheet.hidden=true;
+    renderAll(); toast("저장했어요. 목표를 계산했어요.");
+  });
+}
+sheet.addEventListener("click", function(e){ if(e.target===sheet) closeSheet(); });
+document.addEventListener("keydown", function(e){ if(e.key==="Escape") closeSheet(); });
+function openDetail(f){
+  var u = f.unit;
+  var rows = [["에너지","kcal","kcal",0],["단백질","protein","g",2],["지방","fat","g",2],["포화지방 (혈관에 쌓이기 쉬운 기름)","satfat","g",2],["트랜스지방","trans","g",2],["콜레스테롤","chol","mg",1],["나트륨 (소금 성분)","sodium","mg",0],["탄수화물","carb","g",2],["당류","sugar","g",2],["식이섬유","fiber","g",1],["칼슘","calcium","mg",0],["비타민 D","vitd","μg",1]];
+  var tr = rows.map(function(r){ return '<tr><td>'+r[0]+'</td><td class="n">'+(f[r[1]]===null?'<span class="muted">자료 없음</span>':fmt(f[r[1]],r[3])+r[2])+'</td></tr>'; }).join("");
+  openSheet('<h2 style="margin-top:0">'+esc(f.name)+'</h2>'+
+    '<p class="small muted">100'+u+' 기준 영양 성분</p><table>'+tr+'</table>'+
+    '<h3>출처</h3><table>'+
+    '<tr><td>DB 식품명</td><td>'+esc(f.dbName)+'</td></tr>'+
+    '<tr><td>식품코드</td><td>'+esc(f.id)+'</td></tr>'+
+    '<tr><td>구분</td><td>'+esc(f.type)+'</td></tr>'+
+    '<tr><td>자료 출처</td><td>'+esc(f.source)+(f.maker?' · 제조사 '+esc(f.maker):'')+'</td></tr>'+
+    '<tr><td>기준일자</td><td>'+esc(f.date)+'</td></tr>'+
+    '<tr><td>매칭 메모</td><td>'+esc(f.match)+'</td></tr></table>'+
+    '<p class="small muted">1회 분량('+esc(f.servingDesc)+', '+fmt(f.serving,0)+u+')은 DB 값이 아니라 일반적인 1회 양을 참고로 정한 값이에요.</p>');
+}
+
+/* ───────── 7. 탭 3: 다음 끼니 추천 (규칙 기반) ───────── */
+// 끼니 템플릿: main = 양을 조절하는 단백질 주반찬, 나머지는 고정. season = 양념(일반적인 양으로 추정)
+// meals: 쓸 수 있는 끼니 (B 아침, L 점심, D 저녁)
+function I(name, g, role){ return {id:KEY_ID[name], g:g, role:role||""}; }
+var TEMPLATES = [
+  {name:"고등어구이 + 현미밥 반 공기 + 시금치나물 + 두부된장국(반 그릇)", meals:"LD", items:[I("고등어 (구운 것)",80,"main"),I("소금",0.5,"season"),I("현미밥",105),I("시금치 (데친 것)",70),I("간장",2,"season"),I("참기름",1,"season"),I("두부 (부침용)",40),I("애호박 (데친 것)",20),I("된장",7,"season")]},
+  {name:"닭가슴살 채소볶음 + 보리밥 + 달걀찜(흰자 위주)", meals:"LD", items:[I("닭가슴살 (구운 것)",80,"main"),I("양파",30),I("당근",20),I("브로콜리 (데친 것)",50),I("올리브유",3,"season"),I("간장",3,"season"),I("보리밥",105),I("달걀흰자 (삶은 것)",30),I("달걀 (삶은 것)",25),I("소금",0.3,"season")]},
+  {name:"연어구이 + 채소 샐러드 + 그릭요거트 드레싱", meals:"LD", items:[I("연어 (구운 것)",80,"main"),I("상추",30),I("토마토",50),I("오이",30),I("그릭요거트 (설탕 무첨가)",30),I("올리브유",2,"season"),I("소금",0.3,"season")]},
+  {name:"두부조림 + 콩자반 + 미역국(반 그릇) + 보리밥", meals:"BLD", items:[I("두부 (부침용)",120,"main"),I("간장",5,"season"),I("들기름",2,"season"),I("콩자반 (검은콩조림)",15),I("미역 (마른 것)",3),I("간장",2,"season"),I("참기름",1,"season"),I("보리밥",105)]},
+  {name:"돼지 안심 수육 + 쌈채소 + 쌈장 조금 + 현미밥", meals:"LD", items:[I("돼지 안심 (삶은 것)",90,"main"),I("상추",50),I("양배추 (삶은 것)",50),I("쌈장",8,"season"),I("배추김치",30),I("현미밥",105)]},
+  {name:"아침: 삶은 달걀 1개 + 그릭요거트 + 바나나", meals:"B", items:[I("그릭요거트 (설탕 무첨가)",100,"main"),I("달걀 (삶은 것)",50),I("바나나",100)]},
+  {name:"아침: 무가당 두유 + 통밀 토스트 + 삶은 달걀", meals:"B", items:[I("두유 (무가당)",190,"main"),I("통밀식빵",35),I("달걀 (삶은 것)",50),I("토마토",100)]},
+  {name:"삼치구이 + 현미밥 + 콩나물무침 + 김치 조금", meals:"LD", items:[I("삼치 (구운 것)",80,"main"),I("소금",0.5,"season"),I("현미밥",105),I("콩나물 (삶은 것)",70),I("간장",2,"season"),I("참기름",1,"season"),I("배추김치",30)]},
+  {name:"소고기 우둔 장조림 + 보리밥 + 데친 브로콜리 + 무국(반 그릇)", meals:"LD", items:[I("소고기 우둔 (생고기)",80,"main"),I("간장",5,"season"),I("보리밥",105),I("브로콜리 (데친 것)",70),I("무 (데친 것)",50),I("대파",10),I("간장",2,"season")]},
+  {name:"맑은 대구탕(반 그릇) + 현미밥 + 시금치나물", meals:"BLD", items:[I("대구 (찐 것)",100,"main"),I("무 (데친 것)",50),I("대파",10),I("소금",0.7,"season"),I("현미밥",105),I("시금치 (데친 것)",70),I("간장",2,"season"),I("참기름",1,"season")]},
+  {name:"순두부찌개(바지락, 덜 짜게 반 그릇) + 현미밥 + 오이", meals:"LD", items:[I("순두부",200,"main"),I("바지락 (살)",30),I("애호박 (데친 것)",30),I("양파",20),I("대파",5),I("간장",3,"season"),I("소금",0.4,"season"),I("현미밥",105),I("오이",50)]},
+  {name:"오징어 채소볶음(덜 맵게) + 보리밥 + 콩나물국(반 그릇)", meals:"LD", items:[I("오징어 (데친 것)",80,"main"),I("양파",30),I("당근",20),I("대파",10),I("간장",4,"season"),I("들기름",2,"season"),I("보리밥",105),I("콩나물 (삶은 것)",50),I("소금",0.5,"season")]},
+  {name:"참치 채소비빔밥 (고추장 대신 간장 조금)", meals:"LD", items:[I("참치 통조림",50,"main"),I("현미밥",105),I("상추",30),I("오이",30),I("당근",20),I("달걀흰자 (삶은 것)",30),I("참기름",2,"season"),I("간장",3,"season")]},
+  {name:"오리구이(껍질 떼고) + 쌈채소 + 현미밥", meals:"LD", items:[I("오리고기 (껍질째 구운 것)",70,"main"),I("상추",50),I("양파",30),I("쌈장",6,"season"),I("현미밥",105)]},
+  {name:"동태구이 + 현미밥 + 애호박볶음 + 미역국(반 그릇)", meals:"LD", items:[I("명태·동태 (구운 것)",100,"main"),I("소금",0.5,"season"),I("현미밥",105),I("애호박 (데친 것)",70),I("들기름",2,"season"),I("소금",0.3,"season"),I("미역 (마른 것)",3),I("간장",2,"season")]},
+  {name:"닭다리살 간장구이(껍질 떼고) + 보리밥 + 양배추쌈 + 김치 조금", meals:"LD", items:[I("닭다리살 (삶은 것)",90,"main"),I("간장",4,"season"),I("보리밥",105),I("양배추 (삶은 것)",70),I("배추김치",30)]},
+  {name:"새우 브로콜리볶음 + 현미밥 + 토마토", meals:"LD", items:[I("새우 (생새우)",60,"main"),I("브로콜리 (데친 것)",70),I("양파",20),I("올리브유",3,"season"),I("소금",0.4,"season"),I("현미밥",105),I("토마토",100)]},
+  {name:"낫또 달걀덮밥 + 김치 조금", meals:"BL", items:[I("낫또",50,"main"),I("현미밥",105),I("달걀 (삶은 것)",50),I("대파",5),I("간장",2,"season"),I("배추김치",30)]},
+  {name:"병아리콩·대두 샐러드 + 통밀식빵", meals:"BL", items:[I("병아리콩 (삶은 것)",60,"main"),I("대두 (삶은 것)",30),I("토마토",50),I("오이",30),I("양파",15),I("올리브유",3,"season"),I("소금",0.3,"season"),I("통밀식빵",35)]},
+  {name:"돼지 앞다리 불고기(기름 떼고) + 상추쌈 + 현미밥", meals:"LD", items:[I("돼지 앞다리살 (생고기)",80,"main"),I("양파",30),I("대파",10),I("간장",5,"season"),I("참기름",1,"season"),I("상추",30),I("현미밥",105)]},
+  {name:"소고기 홍두깨 버섯볶음 + 보리밥 + 시금치나물", meals:"LD", items:[I("소고기 홍두깨 (생고기)",80,"main"),I("느타리버섯 (데친 것)",50),I("양파",20),I("간장",4,"season"),I("들기름",2,"season"),I("보리밥",105),I("시금치 (데친 것)",70),I("간장",2,"season"),I("참기름",1,"season")]},
+  {name:"연두부 + 삶은 달걀 + 군고구마", meals:"B", items:[I("연두부",90,"main"),I("간장",2,"season"),I("달걀 (삶은 것)",50),I("군고구마",100)]}
+];
+var SNACKS = [
+  {name:"삶은 달걀 1개 + 토마토", items:[I("달걀 (삶은 것)",50,"main"),I("토마토",100)]},
+  {name:"그릭요거트 (설탕 무첨가)", items:[I("그릭요거트 (설탕 무첨가)",100,"main")]},
+  {name:"무가당 두유 1팩", items:[I("두유 (무가당)",190,"main")]},
+  {name:"아몬드 한 줌", items:[I("아몬드",20,"main")]},
+  {name:"연두부 1컵 (간장 조금)", items:[I("연두부",90,"main"),I("간장",1,"season")]},
+  {name:"달걀흰자 2개 + 사과 반 개", items:[I("달걀흰자 (삶은 것)",60,"main"),I("사과",100)]},
+  {name:"저지방 우유 1컵", items:[I("저지방 우유",200,"main")]}
+];
+// 같은 식품으로 보는 묶음 (오늘 이미 먹었으면 피함)
+var GROUP = {};
+[["닭가슴살 (삶은 것)","닭가슴살 (구운 것)"],["달걀 (삶은 것)","달걀흰자 (삶은 것)"],["두부 (부침용)","순두부","연두부"],["소고기 우둔 (생고기)","소고기 홍두깨 (생고기)"]]
+  .forEach(function(g,i){ g.forEach(function(n){ GROUP[KEY_ID[n]] = "g"+i; }); });
+function grp(id){ return GROUP[id] || id; }
+var MAIN_KIND = {meat:"고기", fish:"생선", soy:"콩", eggdairy:"달걀·유제품", nut:"견과"};
+
+var curMeal = null, curEx = "쉬는 날";
+var MEALS = [["B","아침"],["L","점심"],["D","저녁"],["S","간식"]];
+var EXS = ["라인댄스","파크골프","요가","쉬는 날"];
+function defaultMeal(){ var h = new Date().getHours(); return h<10?"B":(h<15?"L":(h<21?"D":"S")); }
+function recChips(){
+  if(!curMeal) curMeal = defaultMeal();
+  var mb = document.getElementById("mealChips"); mb.innerHTML="";
+  MEALS.forEach(function(m){ var b=document.createElement("button"); b.className="chip"; b.textContent=m[1]; b.setAttribute("aria-pressed", m[0]===curMeal?"true":"false"); b.addEventListener("click",function(){curMeal=m[0]; recChips();}); mb.appendChild(b); });
+  var eb = document.getElementById("exChips"); eb.innerHTML="";
+  EXS.forEach(function(x){ var b=document.createElement("button"); b.className="chip"; b.textContent=x; b.setAttribute("aria-pressed", x===curEx?"true":"false"); b.addEventListener("click",function(){curEx=x; recChips();}); eb.appendChild(b); });
+}
+function clamp(v,a,b){ return Math.max(a, Math.min(b, v)); }
+function roundG(g, base){ return base>=40 ? Math.round(g/10)*10 : Math.round(g/5)*5; }
+
+function runRecommend(){
+  recChips();
+  if(!hasProfile()){ openSetup(); return; }
+  var d = load(), t = targets(d.profile), s = todayTotals();
+  var isSnack = curMeal==="S", exercised = curEx!=="쉬는 날" && !isSnack;
+  var mealsLeft = {B:3, L:2, D:1, S:1}[curMeal];
+  var remP = Math.max(0, t.protein - s.protein);
+  var target, share;
+  if(isSnack){ target = clamp(remP*0.2, 6, 15); share = 0.2; }
+  else{
+    target = clamp(remP/mealsLeft, 20, 35);
+    if(exercised) target = clamp(target, 25, 30);
+    share = 1/mealsLeft;
+  }
+  var allow = {
+    chol: Math.max(0, t.chol - s.chol)*share,
+    satfat: Math.max(0, t.satfat - s.satfat)*share,
+    sodium: Math.max(0, t.sodium - s.sodium)*share
+  };
+  // 오늘 이미 먹은 단백질 식품
+  var eaten = {};
+  todayLog().forEach(function(e){ entryItems(e).forEach(function(it){ var f=BY_ID[it.id]; if(f && PROTEIN_CATS.indexOf(f.cat)>=0) eaten[grp(it.id)] = true; }); });
+
+  var pool = isSnack ? SNACKS : TEMPLATES.filter(function(tp){
+    if(tp.meals.indexOf(curMeal)<0) return false;
+    if(exercised && !tp.items.some(function(it){ return BY_ID[it.id] && BY_ID[it.id].cat==="grain"; })) return false;
+    return true;
+  });
+  var mults = isSnack ? [1, 1.5, 2] : [0.5, 0.75, 1, 1.25, 1.5];
+  var cands = [];
+  pool.forEach(function(tp, idx){
+    var main = tp.items.filter(function(it){return it.role==="main";})[0];
+    var repeat = !!eaten[grp(main.id)];
+    var best = null;
+    mults.forEach(function(m){
+      var mg = roundG(main.g*m, main.g);
+      var items = tp.items.map(function(it){ return it.role==="main" ? {id:it.id, g:mg, role:"main"} : {id:it.id, g:it.g, role:it.role}; });
+      var sm = sumItems(items);
+      var over = Math.max(sm.chol/(allow.chol||1e-9), sm.satfat/(allow.satfat||1e-9), sm.sodium/(allow.sodium||1e-9));
+      var ok = sm.chol<=allow.chol && sm.satfat<=allow.satfat && sm.sodium<=allow.sodium;
+      var c = {tp:tp, idx:idx, items:items, sum:sm, ok:ok, over:over, diff:Math.abs(sm.protein-target), m:m, repeat:repeat, kind:BY_ID[main.id].cat};
+      if(!best || better(c,best)) best = c;
+    });
+    cands.push(best);
+  });
+  function better(a,b){ if(a.ok!==b.ok) return a.ok; if(!a.ok) return a.over<b.over; return a.diff<b.diff || (a.diff===b.diff && a.m<b.m); }
+  function cmp(a,b){
+    if(a.repeat!==b.repeat) return a.repeat?1:-1;
+    if(a.ok!==b.ok) return a.ok?-1:1;
+    if(!a.ok) return a.over-b.over || a.idx-b.idx;
+    return a.diff-b.diff || a.idx-b.idx;
+  }
+  cands.sort(cmp);
+  // 고기·생선·콩이 골고루: 종류가 겹치지 않게 먼저 고르고, 모자라면 나머지에서
+  var pick=[], usedKind={};
+  cands.forEach(function(c){ if(pick.length<3 && !usedKind[c.kind]){ pick.push(c); usedKind[c.kind]=true; } });
+  cands.forEach(function(c){ if(pick.length<3 && pick.indexOf(c)<0) pick.push(c); });
+  pick.sort(cmp);
+
+  var mealName = {B:"아침",L:"점심",D:"저녁",S:"간식"}[curMeal];
+  document.getElementById("recBasis").innerHTML =
+    '<div class="card soft"><b>이번 '+mealName+' 기준</b><br>'+
+    '<span class="small">단백질 목표 <b>'+fmt(target,0)+'g</b> (남은 '+fmt(remP,0)+'g'+(isSnack?'의 약 20%':' ÷ 남은 끼니 '+mealsLeft+'번')+(exercised?', 운동한 날이라 25~30g + 밥 함께':'')+')<br>'+
+    '이번 끼니에 써도 되는 양: 콜레스테롤 '+fmt(allow.chol,0)+'mg · 포화지방 '+fmt(allow.satfat,1)+'g · 나트륨 '+fmt(allow.sodium,0)+'mg</span></div>';
+
+  var box = document.getElementById("recList"); box.innerHTML="";
+  if(isSnack){ var p=document.createElement("p"); p.className="muted"; p.textContent="군것질 대신 단백질 간식으로 바꿔 보세요."; box.appendChild(p); }
+  pick.forEach(function(c, i){
+    var main = c.items.filter(function(it){return it.role==="main";})[0];
+    var mf = BY_ID[main.id];
+    var food = c.items.filter(function(it){return it.role!=="season";});
+    var seas = [], seasIdx = {};
+    c.items.filter(function(it){return it.role==="season";}).forEach(function(it){
+      if(seasIdx[it.id]===undefined){ seasIdx[it.id]=seas.length; seas.push({id:it.id, g:it.g}); } else seas[seasIdx[it.id]].g += it.g;
+    });
+    var li = food.map(function(it){ var f=BY_ID[it.id]; return '<li>'+esc(f.name)+' <b>'+fmt(it.g,0)+f.unit+'</b>'+(it.role==="main"?' <span class="small muted">(단백질 주반찬)</span>':'')+'</li>'; }).join("");
+    var sm = c.sum;
+    var miss = Object.keys(sm.missing).filter(function(k){return k==="chol"||k==="satfat"||k==="sodium";});
+    var div = document.createElement("div"); div.className="card rec";
+    div.innerHTML = '<h3>'+(i+1)+'. '+esc(c.tp.name)+'</h3>'+
+      '<span class="small muted">주반찬: '+(MAIN_KIND[c.kind]||"")+'</span>'+
+      (c.repeat?'<br><span class="flag">! 오늘 이미 먹은 식품이에요 (다른 선택지가 부족해서 포함)</span>':'')+
+      (!c.ok?'<br><span class="flag">! 이번 끼니 허용량을 조금 넘어요 — 국물·양념을 줄여 주세요</span>':'')+
+      '<ul>'+li+'</ul>'+
+      (seas.length?'<p class="small muted">양념(일반적인 양으로 추정): '+seas.map(function(it){return esc(BY_ID[it.id].name)+' '+fmt(it.g,1)+'g';}).join(", ")+'</p>':'')+
+      '<div class="tot">'+
+        '<div>단백질<br><b>'+fmt(sm.protein,1)+'g</b></div>'+
+        '<div>열량<br><b>'+fmt(sm.kcal,0)+'kcal</b></div>'+
+        '<div>콜레스테롤<br><b>'+fmt(sm.chol,0)+'mg</b></div>'+
+        '<div>포화지방<br><b>'+fmt(sm.satfat,1)+'g</b></div>'+
+        '<div style="grid-column:1/-1">나트륨<br><b>'+fmt(sm.sodium,0)+'mg</b></div>'+
+      '</div>'+
+      (miss.length?'<p class="small muted">'+miss.map(function(k){return esc(Object.keys(sm.missingFoods[k]).join(", "))+'의 '+{chol:"콜레스테롤",satfat:"포화지방",sodium:"나트륨"}[k];}).join(", ")+'은 DB에 자료가 없어 합계에서 빠졌어요.</p>':'')+
+      '<button class="btn primary eat">이걸로 먹을게요</button>';
+    div.querySelector(".eat").addEventListener("click", function(){
+      todayLog().push({t:"meal", name:c.tp.name, meal:mealName, items:c.items.map(function(it){return {id:it.id,g:it.g};}), ts:Date.now()}); save();
+      toast("오늘 기록에 담았어요 (단백질 "+fmt(sm.protein,0)+"g)");
+    });
+    box.appendChild(div);
+  });
+}
+document.getElementById("runRec").addEventListener("click", runRecommend);
+
+/* ───────── 8. 탭 4: 알아두기 ───────── */
+function fillProfile(){
+  var p = load().profile; if(!p) return;
+  document.getElementById("pAge").value = p.age;
+  document.getElementById("pH").value = p.height;
+  document.getElementById("pW").value = p.weight;
+  document.getElementById("pBF").value = p.bodyfat;
+}
+function renderInfo(){
+  var p = load().profile, t = targets(p);
+  var bmiTxt = t.bmi<18.5 ? "몸무게(체질량지수)는 저체중 쪽이에요." :
+               t.bmi<23 ? "몸무게(체질량지수)는 정상 범위예요." :
+               t.bmi<25 ? "몸무게(체질량지수)는 정상보다 조금 높은 편(과체중 전 단계)이에요." :
+                          "몸무게(체질량지수)가 비만 기준(25 이상)이에요.";
+  document.getElementById("coreMsg").textContent = bmiTxt +
+    (p.bodyfat>=33 ? " 다만 체지방률 "+p.bodyfat+"%는 이 나이 여성 기준으로 약간 높은 편이에요. 그래서" : " 그래서");
+  document.getElementById("bodySummary").innerHTML =
+    '<b>지금 몸 상태 (입력값 기준)</b><br>'+
+    '<span class="small">여성 '+p.age+'세 · 키 '+p.height+'cm · 몸무게 '+p.weight+'kg · 체지방률 '+p.bodyfat+'%</span><br>'+
+    '<span class="small">체질량지수(BMI) <b>'+fmt(t.bmi,1)+'</b>'+(t.bmi<18.5?' (저체중)':(t.bmi<23?' (정상 범위)':(t.bmi<25?' (과체중 전 단계)':' (비만 기준)')))+' · 체지방 '+fmt(t.fatMass,1)+'kg · 체지방 뺀 몸무게(근육·뼈 등) '+fmt(t.lean,1)+'kg</span><br>'+
+    '<span class="small">하루 단백질 목표 <b>'+t.proteinLo+'~'+t.proteinHi+'g</b> (끼니당 20~30g)</span>';
+  var R = [
+    ["에너지", "약 "+t.energy.toLocaleString()+" kcal ("+(t.energy-100).toLocaleString()+"~"+(t.energy+100).toLocaleString()+")", "2025 한국인 영양소 섭취기준 50~64세 여성 필요추정량 1,700kcal. 기초대사량(Mifflin-St Jeor 식) "+fmt(t.bmr,0)+"kcal × 활동계수 1.375~1.55 ≈ "+fmt(t.tdeeLo,0)+"~"+fmt(t.tdeeHi,0)+"kcal에서 하루 300kcal 안팎만 줄인 값 (계산: 기초대사량 × 1.5 − 300)"],
+    ["단백질", t.proteinLo+"~"+t.proteinHi+"g (최소 50g), 끼니당 20~30g", "권장섭취량 50g/일은 표준체중 기준 최소치. 몸무게 "+p.weight+"kg·규칙적 운동·근육 유지 목적이라 몸무게 × 1.0~1.2g 적용"],
+    ["지방", "에너지의 15~30% (약 "+t.fatLo+"~"+t.fatHi+"g)", "에너지적정비율"],
+    ["포화지방", "에너지의 7% 미만 (약 "+t.satfat+"g 미만)", "에너지적정비율"],
+    ["트랜스지방", "에너지의 1% 미만 (약 "+t.trans+"g 미만)", "에너지적정비율"],
+    ["콜레스테롤", "하루 300mg 미만", "목표섭취량 권고"],
+    ["나트륨", "하루 2,300mg 미만 (가능하면 2,000mg)", "만성질환위험감소섭취량"],
+    ["식이섬유", "25g", "충분섭취량"],
+    ["칼슘", "750mg", "권장섭취량 (폐경 전후 뼈 건강)"],
+    ["비타민 D", "10μg", "충분섭취량"]
+  ];
+  document.getElementById("basisBody").innerHTML =
+    '<p class="small muted">내 정보를 바꾸면 에너지·단백질·지방 목표가 자동으로 다시 계산돼요.</p>'+
+    '<table><tr><th>항목</th><th>목표</th></tr>'+R.map(function(r){return '<tr><td><b>'+r[0]+'</b></td><td>'+r[1]+'<br><span class="small muted">'+r[2]+'</span></td></tr>';}).join("")+'</table>'+
+    '<p class="small muted">출처: 보건복지부·한국영양학회 「2025 한국인 영양소 섭취기준」, Mifflin-St Jeor 기초대사량 식</p>';
+  var types = {}; FOODS.forEach(function(f){ types[f.source] = (types[f.source]||0)+1; });
+  document.getElementById("dataBody").innerHTML =
+    '<p class="small">식품의약품안전처 식품영양성분 데이터베이스(K-FIND)를 공공데이터포털 「전국통합식품영양성분정보 표준데이터」 파일로 받아 사용했어요. 모든 영양 수치는 이 DB 값이고, 빈 칸은 "자료 없음"으로 표시해요.</p>'+
+    '<table>'+Object.keys(types).map(function(k){return '<tr><td>'+esc(k)+'</td><td class="n">'+types[k]+'개</td></tr>';}).join("")+'</table>'+
+    '<p class="small muted">두부·두유·요거트·치즈·가공육은 원재료 자료가 없어 시판 제품 하나의 표시값을 썼어요. 제품마다 조금씩 다를 수 있어요. 추천 메뉴의 양념(간장·된장·소금 등) 양과 1회 분량은 일반적인 양으로 정한 참고값이에요.</p>';
+}
+document.getElementById("saveProfile").addEventListener("click", function(){
+  var p = {sex:"F", age:parseFloat(document.getElementById("pAge").value), height:parseFloat(document.getElementById("pH").value),
+           weight:parseFloat(document.getElementById("pW").value), bodyfat:parseFloat(document.getElementById("pBF").value)};
+  if(!validProfile(p)){ toast("네 칸을 모두 알맞은 숫자로 입력해 주세요"); return; }
+  load().profile = p; save(); renderAll(); toast("저장했어요. 목표를 다시 계산했어요.");
+});
+
+/* 주의 문구 */
+var DISC = "이 페이지는 일반적인 식단 참고용이며 의학적 진단이 아닙니다. 콩팥(신장) 질환, 고지혈증·당뇨 약 복용, 통풍이 있으면 단백질을 늘리기 전에 의사나 영양사와 상의하세요.";
+document.querySelectorAll("[data-disc]").forEach(function(el){ el.textContent = DISC; });
+document.getElementById("noteBtn").addEventListener("click", function(){ openSheet('<h2 style="margin-top:0">꼭 읽어 주세요</h2><p>'+DISC+'</p>'); });
+
+/* 날짜가 바뀌면 오늘 기록 새로 시작 */
+var lastDay = dayKey();
+setInterval(function(){ if(dayKey()!==lastDay){ lastDay=dayKey(); pruneOld(); save(); renderToday(); } }, 60000);
+document.addEventListener("visibilitychange", function(){ if(!document.hidden && dayKey()!==lastDay){ lastDay=dayKey(); pruneOld(); save(); if(hasProfile()) renderToday(); } });
+
+/* 시작 */
+function renderAll(){ catChips(); renderFoods(); recChips(); fillProfile(); renderInfo(); renderToday(); }
+if(hasProfile()) renderAll(); else { recChips(); openSetup(); }
+})();
+</script>
+</body>
+</html>
